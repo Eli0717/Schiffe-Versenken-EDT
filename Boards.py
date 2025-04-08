@@ -14,7 +14,11 @@ board[7][0] = "g"
 board[8][0] = "h"
 board[9][0] = "i"
 board[10][0] = "j"
-
+board[0][0] = ""
+for i in range (1,11):
+    for j in range (1,11):
+        board[i][j] = "O"
+        
 # Ausgabe Zeile für Zeile mit Tabulatoren für bessere Lesbarkeit
 for row in board:
     print("\t".join(map(str, row)))  # Alle Werte zu Strings machen und mit Tab trennen
