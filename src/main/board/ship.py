@@ -1,1 +1,1 @@
-from game_board import
+from game_board import *
