@@ -10,14 +10,13 @@
 # 5.4 Spielende feststellen
 from board.game_board import *
 from board.ship import *
-
+from bot.bot_player import *
 def main():
     board1 = initialisiere_board()
     board2 = initialisiere_board()
     zeige_board(board1, True)
     setze_schiffe(board1)
-
-    #setze_schiffe_durch_bot(board2)
+    setze_schiffe_durch_bot(board2)
     #fuehre_spielzuege_durch(board1, board2)
 
 main()
