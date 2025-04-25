@@ -8,11 +8,12 @@ UNTEN = 4
 Schifflängen = [5,4,3,3,2]
 
 def setze_schiffe(board):
-    for schifflänge in Schifflängen:
-        setze_nächstes_schiff(board, schifflänge)
+    for i in range(len(Schifflängen)):
+        schifflänge = Schifflängen[i]
+        schiff_id = SCHIFF_IDS[i]
+        setze_nächstes_schiff(board, schifflänge, schiff_id)
 
-
-def setze_nächstes_schiff(board, schifflänge: int):
+def setze_nächstes_schiff(board, schifflänge: int, schiff_id: str):
 
     isStartPosMöglich = False
     while not isStartPosMöglich:
@@ -38,7 +39,7 @@ def setze_nächstes_schiff(board, schifflänge: int):
         else:
             print("Hier kann kein Schiff platziert werden.")
 
-    setze_schiff_in_board(board, x, y, richtung, schifflänge)
+    setze_schiff_in_board(board, x, y, richtung, schifflänge, schiff_id)
     zeige_board(board, False)
 
 def kann_schiff_gesetzt_werden(board, x : int, y : int, richtung, schifflänge : int) -> bool:
@@ -49,44 +50,44 @@ def kann_schiff_gesetzt_werden(board, x : int, y : int, richtung, schifflänge :
         if endpunkty < 0:
             return False
         for i in range(schifflänge):
-            if board[x][y-i] == SCHIFF:
+            if board[x][y-i] != WASSER:
                 return False
     elif richtung == UNTEN:
         endpunktx = x + schifflänge - 1
         if endpunktx > 9:
             return False
         for i in range(schifflänge):
-            if board[x+i][y] == SCHIFF:
+            if board[x+i][y] != WASSER:
                 return False
     elif richtung == RECHTS:
         endpunkty = y + schifflänge - 1
         if endpunkty > 9:
             return False
         for i in range(schifflänge):
-            if board[x][y+1] == SCHIFF:
+            if board[x][y+1] != WASSER:
                 return False
     elif richtung == OBEN:
         endpunktx = x - (schifflänge - 1)
         if endpunktx < 0:
             return False
         for i in range(schifflänge):
-            if board[x-i][y] == SCHIFF:
+            if board[x-i][y] != WASSER:
                 return False
     return True
 
-def setze_schiff_in_board(board, x : int, y : int, richtung: int, schifflänge : int):
+def setze_schiff_in_board(board, x : int, y : int, richtung: int, schifflänge : int, schiff_id: str):
     if richtung == LINKS:
         for i in range(schifflänge):
-            board[x][y-i] = SCHIFF
+            board[x][y-i] = schiff_id
     elif richtung == UNTEN:
         for i in range(schifflänge):
-            board[x+i][y] = SCHIFF
+            board[x+i][y] = schiff_id
     elif richtung == RECHTS:
         for i in range(schifflänge):
-            board[x][y+i] = SCHIFF
+            board[x][y+i] = schiff_id
     elif richtung == OBEN:
         for i in range(schifflänge):
-            board[x-i][y] = SCHIFF
+            board[x-i][y] = schiff_id
 
 
 

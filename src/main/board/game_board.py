@@ -1,7 +1,8 @@
 from numpy import *     # Für Matrix notwendig
 
 WASSER = "🌊"
-SCHIFF = "🚢"
+SCHIFF_IDS = ["1", "2", "3", "4", "5"]  # ID für jedes Schiff
+# SCHIFF = "🚢"
 TREFFER = "🔥"
 FEHLSCHUSS = "❌"
 
