@@ -35,7 +35,6 @@ def setze_schiffe_durch_bot(board)
         zeige_board(board, False)
 
 
-
 def wo_kann_ein_Schiff_hin(board, x : int, y : int, richtung, schifflänge : int) -> bool:
     if x > 9 or x < 0 or y > 9 or y < 0:
         return False
@@ -76,10 +75,10 @@ def wo_kann_ein_Schiff_hin(board, x : int, y : int, richtung, schifflänge : int
             if board[x-i][y] == FEHLSCHUSS:
                 return False
     return True
-    
-boardtrackedshots = array([[WASSER for _ in range(10)] for _ in range(10)])   # 10 x 10 Matrix
-def finde_schuss():                                                           # auf Warscheinlichkeit basiertes "guessen"
-    boardprob = array([[0 for _ in range(10)] for _ in range(10)])
+
+
+def finde_Schiff():
+    global schussposx, schussposy
     for schifflänge in Schifflängen:   # alle Längen 
         for i in range (10):         # alle in x Richtung
             for j in range (10):     # alle in y Richtung
@@ -100,30 +99,107 @@ def finde_schuss():                                                           # 
                                 boardprob[i][j - l] += 1
                             elif richtung == OBEN:
                                 boardprob[i - l][j] += 1
-    zwischenvariable = 0
+
+
+    zwischenvariabl = 0
+    zwischenvarpositionen = []
     endergebnissx = 0
     endergebnissy = 0
 
     for x in range (10):
         for y in range (10):
-            if boardprob[x][y] > zwischenvariable:
-                endergebnissx = y + 1
-                endergebnissy = x + 1
-                zwischenvariable = boardprob[x][y]
+            if boardprob[x][y] > zwischenvariabl:
+                zwischenvariabl = boardprob[x][y]
+                zwischenvarpositionen.clear()
+                zwischenvarpositionen.append((x,y))
+            elif boardprob[x][y] == zwischenvariabl:
+                zwischenvarpositionen.append((x,y))
+
+    auswahl = r.choice(zwischenvarpositionen)
+    endergebnissx, endergebnissy = auswahl
+    print (zwischenvarpositionen)
+    print(endergebnissx,endergebnissy)
+    schussposx = endergebnissx
+    schussposy = endergebnissy
+
     
-    print(endergebnissx,endergebnissy)                            #GUESS
-    boardtrackedshots[endergebnissx][endergebnissy] = FEHLSCHUSS
 
-def senke_Schiff():    # falls treffer gefallen ist, suche den rest vom Schiff und senke ihn
-    print (0)
-    # in bearbeitung
 
-finden = True
-def Schuss():        # fassenwechsel zwischen suchen und senken
-    if finden == True:
+treffer_position = []  # Globale Variable, merken wo der Treffer war
+finden = True            # Ob der Bot suchen oder versenken soll
+
+def senke_Schiff():
+    global finden, treffer_positionen
+
+    # Wenn weniger als 2 Treffer: normal angrenzende Felder probieren
+    if len(treffer_positionen) < 2:
+        x, y = treffer_positionen[-1]
+        richtungen = [(-1,0), (0,1), (1,0), (0,-1)]  # (dx, dy)
+        
+        for dx, dy in richtungen:
+            nx = x + dx
+            ny = y + dy
+            if 0 <= nx < 10 and 0 <= ny < 10:
+                if boardtrackedshots[nx][ny] == WASSER:
+                    print(f"Schieße auf {nx}, {ny}")
+                    if board2[nx][ny] == SCHIFF:
+                        boardtrackedshots[nx][ny] = TREFFER
+                        treffer_positionen.append((nx, ny))
+                    else:
+                        boardtrackedshots[nx][ny] = FEHLSCHUSS
+                    return
+    else:
+        # Mehrere Treffer: Richtung bestimmen
+        x1, y1 = treffer_positionen[0]
+        x2, y2 = treffer_positionen[1]
+
+        if x1 == x2:
+            # Schiff liegt horizontal → gleiche Zeile
+            treffer_positionen.sort(key=lambda pos: pos[1])  # sortiere nach y
+            links = (treffer_positionen[0][0], treffer_positionen[0][1] - 1)
+            rechts = (treffer_positionen[-1][0], treffer_positionen[-1][1] + 1)
+            
+            for nx, ny in [links, rechts]:
+                if 0 <= nx < 10 and 0 <= ny < 10:
+                    if boardtrackedshots[nx][ny] == WASSER:
+                        print(f"Schieße auf {nx}, {ny}")
+                        if board2[nx][ny] == SCHIFF:
+                            boardtrackedshots[nx][ny] = TREFFER
+                            treffer_positionen.append((nx, ny))
+                        else:
+                            boardtrackedshots[nx][ny] = FEHLSCHUSS
+                        return
+        else:
+            # Schiff liegt vertikal → gleiche Spalte
+            treffer_positionen.sort(key=lambda pos: pos[0])  # sortiere nach x
+            oben = (treffer_positionen[0][0] - 1, treffer_positionen[0][1])
+            unten = (treffer_positionen[-1][0] + 1, treffer_positionen[-1][1])
+            
+            for nx, ny in [oben, unten]:
+                if 0 <= nx < 10 and 0 <= ny < 10:
+                    if boardtrackedshots[nx][ny] == WASSER:
+                        print(f"Schieße auf {nx}, {ny}")
+                        if board2[nx][ny] == SCHIFF:
+                            boardtrackedshots[nx][ny] = TREFFER
+                            treffer_positionen.append((nx, ny))
+                        else:
+                            boardtrackedshots[nx][ny] = FEHLSCHUSS
+                        return
+    
+    # Wenn keine Felder mehr offen sind: Schiff fertig
+    finden = True
+    treffer_positionen.clear()
+
+
+def Schuss_Bot():
+    global finden, treffer_positionen, schussposx, schussposy 
+    if finden:
         finde_Schiff()
+        if board2[schussposx][schussposy] == SCHIFF:
+            boardtrackedshots[schussposx][schussposy] = TREFFER
+            finden = False
+            treffer_positionen = [(schussposx, schussposy)]
+        else:
+            boardtrackedshots[schussposx][schussposy] = FEHLSCHUSS
     else:
         senke_Schiff()
-
-    #Muss wissen ob wir grade getroffen haben, wenn ja dann senke_Schiff, wenn nein dann finde_Schiff
-
