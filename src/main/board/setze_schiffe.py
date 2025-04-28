@@ -1,4 +1,4 @@
-# Importiert alle Funktionen und Konstanten aus dem Modul game_board
+# Importiert alle Funktionen und Konstanten aus game_board
 from board.game_board import *
 
 # Definition von Richtungen als Konstanten
@@ -14,33 +14,33 @@ Schifflängen = [5,4,3,3,2]
 def setze_schiffe(board):
     for i in range(len(Schifflängen)):  # Gehe durch alle Schiffslängen
         schifflänge = Schifflängen[i]    # Hole aktuelle Schiffslänge
-        schiff_id = SCHIFF_IDS[i]        # Hole die zugehörige Schiff-ID
+        schiff_id = SCHIFF_IDS[i]        # Hole die zugehörige Schiff-ID (Array aus game_board)
         setze_nächstes_schiff(board, schifflänge, schiff_id)  # Setze das Schiff auf dem Board
 
 # Funktion, um ein einzelnes Schiff zu setzen
 def setze_nächstes_schiff(board, schifflänge: int, schiff_id: str):
-    isStartPosMöglich = False  # Flag, ob Startposition möglich ist
-    while not isStartPosMöglich:  # Wiederholen bis eine gültige Startposition gefunden ist
+    istStartPosMöglich = False  # Startposition als boolean deklariert
+    while not istStartPosMöglich:  # Wiederholen bis eine gültige Startposition gefunden ist
         koordinate = input("Nenne deine Koordinate für das Schiff mit der Länge " + str(schifflänge) + ": ")
         
         x,y = dekodiere_koordinate(koordinate)  # Umwandeln der Eingabe in Koordinaten
         
         # Prüfen, ob das Schiff in den vier Richtungen gesetzt werden kann
         if kann_schiff_gesetzt_werden(board, x, y, OBEN, schifflänge):
-            isStartPosMöglich = True
+            istStartPosMöglich = True
             print(str(OBEN) + ": OBEN")
         if kann_schiff_gesetzt_werden(board, x, y, RECHTS, schifflänge):
-            isStartPosMöglich = True
+            istStartPosMöglich = True
             print(str(RECHTS) + ": RECHTS")
         if kann_schiff_gesetzt_werden(board, x, y, LINKS, schifflänge):
-            isStartPosMöglich = True
+            istStartPosMöglich = True
             print(str(LINKS) + ": LINKS")
         if kann_schiff_gesetzt_werden(board, x, y, UNTEN, schifflänge):
-            isStartPosMöglich = True
+            istStartPosMöglich = True
             print(str(UNTEN) + ": UNTEN")
 
-        # Falls eine Position gefunden wurde, Richtung auswählen
-        if isStartPosMöglich:
+        # Falls eine oder mehrere Position gefunden wurde, Richtung auswählen
+        if istStartPosMöglich:
             richtung = lese_int(1, 4, "In welche Richtung soll das Schiff zeigen? ")
         else:
             print("Hier kann kein Schiff platziert werden.")  # Fehlermeldung falls ungültig
